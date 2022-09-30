@@ -35,7 +35,7 @@ static float w_z = 0.0f;
 // Setpoint
 static float o_x_des = 0.0f;
 static float o_y_des = 0.0f;
-static float o_z_des = 0.3f;
+static float o_z_des = 0.0f;
 
 // Input
 static float tau_x = 0.0f;
@@ -166,9 +166,9 @@ void controllerAE483(control_t *control,
       // chosen by the controller
 
       // FIXME
-      tau_x = 0.00066300f * (o_y - o_y_des) -0.00439973f * phi + 0.00101699f * v_y -0.00076008f * w_x;
-      tau_y = -0.00066300f * (o_x - o_x_des) -0.00440388f * theta -0.00101727f * v_x -0.00076190f * w_y;
-      tau_z = -0.00002057f * psi -0.00002912f * w_z;
+      tau_x = 0.00209659f * (o_y - o_y_des) -0.00324150f * phi + 0.00119562f * v_y -0.00038176f * w_x;
+      tau_y = -0.00148251f * (o_x - o_x_des) -0.00246701f * theta -0.00088859f * v_x -0.00035057f * w_y;
+      tau_z = -0.00000848f * psi -0.00001866f * w_z;
       f_z = -0.29650261f * (o_z - o_z_des) -0.16520637f * v_z + 0.30607200f;
 
       // FIXME
