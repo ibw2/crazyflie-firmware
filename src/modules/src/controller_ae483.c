@@ -187,26 +187,29 @@ void controllerAE483(control_t *control,
     // State estimates
     if (use_observer) {
     
-      // // Compute each element of:
-      // #
-      // #  C x + D u - y
-      // #
-      y = [[n_x],[n_y],[r]];
-      
-      s_hat = [[o_z_hat[i-1]],[theta_hat[i-1]],[phi_hat[i-1]],[v_x_hat[i-1]],[v_y_hat[i-1]],[v_z_hat[i-1]]];
-      inp = [[w_x],[w_y],[w_z],[a_z - g]];
-      s_hat += dt*(A_obs@(s_hat) + B_obs@(inp) - L@(C_obs@(s_hat) + D_obs@inp - y))
-      
-      // # Update estimates
+      // C x + D u - y
+      meas = [2*k_flow*v_x - k_flow*w_y - n_x, 
+              2*k_flow*v_y + k_flow*w_x - n_y,
+              o_z - r];
+
+      L = [0.000000f,     0.000000f,    17.039953f,  // indexes: 0, 1, 2
+           0.027519f,     0.000000f,     0.000000f,  // indexes: 3, 4, 5
+           0.000000f,    -0.048485f,     0.000000f,  // indexes: 6, 7, 8
+           0.300405f,     0.000000f,     0.000000f,  // indexes: 9, 10, 11
+           0.000000f,     0.375566f,     0.000000f,  // indexes: 12, 13, 14
+           0.000000f,     0.000000f,    80.200000f]; // indexes: 15, 16, 17
+
+      // Update estimates
       o_x += dt * (v_x);
       o_y += dt * (v_y);
-      o_z = s_hat[0]
+      o_z += dt*(v_z - L[2]*meas[2]);
       psi += dt * (w_z);
-      theta = s_hat[1]
-      phi = s_hat[2]  
-      v_x = s_hat[3]  
-      v_y = s_hat[4]
-      v_z = s_hat[5]
+      v_x += dt * (g*theta - L[9]*meas[0]);
+      v_y += dt * (-g*phi - L[13]*meas[1]);
+      v_z += dt * (a_z - g - L[17]*meas[2]);
+      theta += dt * (w_y - L[3]*meas[0]);
+      phi += dt * (w_x - L[7]*meas[1]);
+
       
     } else {
       o_x = state->position.x;
